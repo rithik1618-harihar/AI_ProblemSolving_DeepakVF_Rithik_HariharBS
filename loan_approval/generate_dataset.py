@@ -7,7 +7,7 @@ Minimum 4 input variables + 1 target variable (Approved/Rejected).
 import pandas as pd
 import numpy as np
 
-def generate_loan_dataset(n_samples=1000, random_state=42, save_path="loan_dataset.csv"):
+def generate_loan_dataset(n_samples=1200, random_state=42, save_path="loan_dataset.csv"):
     np.random.seed(random_state)
 
     # --- Feature Generation ---
