@@ -1,23 +1,35 @@
-🏦 PROBLEM 1
-AI Problem Solving – Loan Approval Prediction
-AI Problem Solving Assignment | Classification using Machine Learning
+# 🏦 AI Problem Solving – Loan Approval Prediction
 
-📌 Problem Description
-A bank wants to automate its loan approval process. Given applicant details such as income, credit score, employment status, and loan amount, this system predicts whether a loan should be Approved or Rejected using machine learning classification algorithms.
+> **AI Problem Solving Assignment** | Classification using Machine Learning
 
-🧠 Algorithms Used
-Algorithm	Purpose
-Logistic Regression	Primary classifier (linear decision boundary)
-Decision Tree	Interpretable rule-based classifier
-Random Forest	Ensemble method for higher accuracy
+---
+
+## 📌 Problem Description
+
+A bank wants to automate its loan approval process. Given applicant details such as income, credit score, employment status, and loan amount, this system predicts whether a loan should be **Approved** or **Rejected** using machine learning classification algorithms.
+
+---
+
+## 🧠 Algorithms Used
+
+| Algorithm | Purpose |
+|---|---|
+| **Logistic Regression** | Primary classifier (linear decision boundary) |
+| **Decision Tree** | Interpretable rule-based classifier |
+| **Random Forest** | Ensemble method for higher accuracy |
+
 All models are evaluated with:
+- Test Accuracy
+- ROC-AUC Score
+- 5-Fold Cross-Validation
+- Confusion Matrix
+- Classification Report (Precision, Recall, F1)
 
-Test Accuracy
-ROC-AUC Score
-5-Fold Cross-Validation
-Confusion Matrix
-Classification Report (Precision, Recall, F1)
-📂 Folder Structure
+---
+
+## 📂 Folder Structure
+
+```
 loan_approval/
 ├── loan_approval.py       # Main ML pipeline
 ├── generate_dataset.py    # Synthetic dataset generator
@@ -28,34 +40,67 @@ loan_approval/
 │   ├── feature_importances.png
 │   └── model_comparison.png
 └── requirements.txt
-🗃️ Dataset
-Features (Input Variables – min. 4 required)
-Feature	Type	Description
-Age	Numeric	Applicant's age (22–65)
-Annual_Income	Numeric	Annual income in ₹ / $
-Credit_Score	Numeric	CIBIL / FICO score (300–850)
-Loan_Amount	Numeric	Requested loan amount
-Loan_Term_Months	Numeric	Repayment duration
-Employment_Status	Categorical	Employed / Self-Employed / Unemployed / Retired
-Num_Dependents	Numeric	Number of dependents
-Existing_Loans	Numeric	Number of active loans
-Target Variable
-Variable	Values
-Loan_Status	Approved / Rejected
-Dataset is synthetically generated with realistic approval logic. You can also supply your own CSV from Kaggle – Loan Approval Dataset.
+```
 
-⚙️ Execution Steps
-1. Install dependencies
+---
+
+## 🗃️ Dataset
+
+### Features (Input Variables – min. 4 required)
+
+| Feature | Type | Description |
+|---|---|---|
+| `Age` | Numeric | Applicant's age (22–65) |
+| `Annual_Income` | Numeric | Annual income in ₹ / $ |
+| `Credit_Score` | Numeric | CIBIL / FICO score (300–850) |
+| `Loan_Amount` | Numeric | Requested loan amount |
+| `Loan_Term_Months` | Numeric | Repayment duration |
+| `Employment_Status` | Categorical | Employed / Self-Employed / Unemployed / Retired |
+| `Num_Dependents` | Numeric | Number of dependents |
+| `Existing_Loans` | Numeric | Number of active loans |
+
+### Target Variable
+
+| Variable | Values |
+|---|---|
+| `Loan_Status` | `Approved` / `Rejected` |
+
+> Dataset is synthetically generated with realistic approval logic. You can also supply your own CSV from [Kaggle – Loan Approval Dataset](https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset).
+
+---
+
+## ⚙️ Execution Steps
+
+### 1. Install dependencies
+```bash
 pip install pandas numpy scikit-learn matplotlib seaborn
-2. Run with synthetic data (default)
+```
+
+### 2. Run with synthetic data (default)
+```bash
 python loan_approval.py
-3. Run with your own CSV file
+```
+
+### 3. Run with your own CSV file
+```bash
 python loan_approval.py --csv your_dataset.csv
-4. Interactive console prediction
+```
+
+### 4. Interactive console prediction
+```bash
 python loan_approval.py --interactive
-5. Generate dataset only
+```
+
+### 5. Generate dataset only
+```bash
 python generate_dataset.py
-📊 Sample Output
+```
+
+---
+
+## 📊 Sample Output
+
+```
 ═══════════════════════════════════════════════════════════
   🏦  BANK LOAN APPROVAL PREDICTION SYSTEM
 ═══════════════════════════════════════════════════════════
@@ -93,18 +138,30 @@ python generate_dataset.py
 
   👤 Retiree, Low Loan
      → ✅ APPROVED  (confidence: 82.1%)
-📈 Data Preprocessing Steps
-Missing Value Handling – Numeric columns filled with median; categorical with mode
-Label Encoding – Categorical variables (Employment_Status) encoded to integers
-Feature Scaling – StandardScaler applied to normalise all numeric features
-Train-Test Split – 80% training / 20% testing with stratification
-👥 Team Members
-Name	Roll No
-Deepak VF	RA2411026050015
-Rithik Harihar BS	RA2411026050052
-📚 References
-Scikit-learn Documentation
-Kaggle – Loan Approval Datasets
-Logistic Regression – StatQuest
+```
 
-🏦 PROBLEM 1
+---
+
+## 📈 Data Preprocessing Steps
+
+1. **Missing Value Handling** – Numeric columns filled with median; categorical with mode
+2. **Label Encoding** – Categorical variables (`Employment_Status`) encoded to integers
+3. **Feature Scaling** – StandardScaler applied to normalise all numeric features
+4. **Train-Test Split** – 80% training / 20% testing with stratification
+
+---
+
+## 👥 Team Members
+
+| Name | Roll No |
+|---|---|
+|Deepak VF|RA2411026050015|
+|Rithik Harihar BS|RA2411026050052|
+
+---
+
+## 📚 References
+
+- [Scikit-learn Documentation](https://scikit-learn.org/)
+- [Kaggle – Loan Approval Datasets](https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset)
+- [Logistic Regression – StatQuest](https://www.youtube.com/watch?v=yIYKR4sgzI8)
