@@ -157,11 +157,4 @@ python generate_dataset.py
 |---|---|
 |Deepak VF|RA2411026050015|
 |Rithik Harihar BS|RA2411026050052|
-
 ---
-
-## 📚 References
-
-- [Scikit-learn Documentation](https://scikit-learn.org/)
-- [Kaggle – Loan Approval Datasets](https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset)
-- [Logistic Regression – StatQuest](https://www.youtube.com/watch?v=yIYKR4sgzI8)
