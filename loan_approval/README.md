@@ -155,8 +155,8 @@ python generate_dataset.py
 
 | Name | Roll No |
 |---|---|
-| Member 1 | XXXXXX |
-| Member 2 | XXXXXX |
+|Deepak VF|RA2411026050015|
+|Rithik Harihar BS|RA2411026050052|
 
 ---
 
