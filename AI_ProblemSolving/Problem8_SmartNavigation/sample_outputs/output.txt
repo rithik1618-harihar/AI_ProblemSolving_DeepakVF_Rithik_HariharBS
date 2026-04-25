@@ -1,0 +1,47 @@
+============================================================
+  SMART NAVIGATION SYSTEM — SAMPLE OUTPUT
+  Problem 8: BFS & DFS Comparison
+============================================================
+
+Graph Used:
+  Nodes : A, B, C, D, E, F, G
+  Edges : A-B, A-C, B-D, B-E, C-F, D-G, E-G, F-G
+
+Start Node : A
+Goal  Node : G
+
+------------------------------------------------------------
+  BFS (Breadth-First Search) Result
+------------------------------------------------------------
+  Path Found   : A → B → D → G
+  Path Length  : 3 hops
+  Nodes Explored (in order): A, B, C, D, E, F, G
+  Total Explored: 7 nodes
+  Is Optimal   : YES — BFS always finds shortest path
+
+------------------------------------------------------------
+  DFS (Depth-First Search) Result
+------------------------------------------------------------
+  Path Found   : A → B → D → G
+  Path Length  : 3 hops
+  Nodes Explored (in order): A, B, D, G
+  Total Explored: 4 nodes
+  Is Optimal   : NOT GUARANTEED — depends on graph structure
+
+------------------------------------------------------------
+  Comparison
+------------------------------------------------------------
+  Metric               BFS          DFS
+  ─────────────────────────────────────────────
+  Path length          3 hops       3 hops
+  Nodes explored       7            4
+  Guarantees shortest  YES          NO
+  Memory usage         Higher       Lower
+  Best use case        Shortest     Fast explore
+  ─────────────────────────────────────────────
+
+  Verdict: BFS explored more nodes (7 vs 4) but guarantees
+  the optimal shortest path. DFS was faster in this case
+  but does not always find the shortest route.
+
+============================================================

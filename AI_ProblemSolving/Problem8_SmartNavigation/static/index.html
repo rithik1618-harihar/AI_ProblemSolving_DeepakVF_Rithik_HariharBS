@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Smart Navigation System — BFS & DFS</title>
+<style>
+  :root {
+    --bg:#0f1117;--surface:#1a1d27;--card:#21252f;--border:#2e3340;
+    --text:#e8eaf0;--muted:#7a7f94;--bfs:#3b8bd4;--bfs-light:#1a3a5c;
+    --dfs:#9f62c8;--dfs-light:#3d2060;--start:#1d9e75;--goal:#e8593c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:14px;}
+  .logo{font-size:20px;font-weight:700;color:var(--bfs);letter-spacing:-.5px;}
+  .logo span{color:var(--dfs);}
+  .subtitle{font-size:12px;color:var(--muted);}
+  .badge{margin-left:auto;font-size:11px;background:var(--bfs-light);color:var(--bfs);padding:3px 10px;border-radius:20px;border:1px solid var(--bfs);}
+  .layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 57px);}
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+  .section{padding:16px;border-bottom:1px solid var(--border);}
+  .section-title{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:11px;color:var(--muted);}
+  .field input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:inherit;transition:border-color .2s;}
+  .field input:focus{outline:none;border-color:var(--bfs);}
+  .btn{width:100%;padding:8px;border-radius:7px;font-size:13px;cursor:pointer;border:none;font-family:inherit;font-weight:600;transition:opacity .15s,transform .1s;}
+  .btn:active{transform:scale(.97);}
+  .btn-add{background:var(--card);color:var(--text);border:1px solid var(--border);margin-top:8px;}
+  .btn-add:hover{border-color:var(--bfs);color:var(--bfs);}
+  .btn-run{background:linear-gradient(135deg,var(--bfs),var(--dfs));color:#fff;margin-top:8px;}
+  .btn-run:hover{opacity:.88;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);margin-top:6px;font-size:12px;font-weight:400;}
+  .btn-secondary:hover{color:var(--text);border-color:var(--muted);}
+  .edge-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;max-height:90px;overflow-y:auto;}
+  .edge-tag{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:border-color .15s;}
+  .edge-tag:hover{border-color:var(--goal);color:var(--goal);}
+  .legend{display:flex;flex-direction:column;gap:7px;}
+  .leg{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+  .leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .leg-line{width:24px;height:3px;border-radius:2px;flex-shrink:0;}
+  .main{display:flex;flex-direction:column;}
+  .canvas-wrap{flex:1;position:relative;}
+  canvas{width:100%;height:100%;display:block;}
+  .hint{position:absolute;bottom:10px;right:14px;font-size:11px;color:var(--muted);}
+  .results{background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;display:none;}
+  .results.show{display:block;}
+  .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .result-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .result-card.bfs{border-top:3px solid var(--bfs);}
+  .result-card.dfs{border-top:3px solid var(--dfs);}
+  .rc-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+  .bfs .rc-title{color:var(--bfs);}
+  .dfs .rc-title{color:var(--dfs);}
+  .rc-path{font-size:13px;color:var(--text);word-break:break-all;min-height:20px;font-family:monospace;}
+  .rc-stats{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;}
+  .stat{font-size:11px;}
+  .stat-label{color:var(--muted);}
+  .stat-val{font-weight:700;}
+  .bfs .stat-val{color:var(--bfs);}
+  .dfs .stat-val{color:var(--dfs);}
+  .verdict{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--muted);}
+  .verdict span{background:var(--bfs-light);color:var(--bfs);padding:2px 7px;border-radius:10px;font-weight:600;font-size:10px;}
+  .no-path{font-size:12px;color:var(--goal);font-style:italic;}
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--goal);color:#fff;padding:8px 20px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;}
+  #toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Smart<span>Nav</span></div>
+    <div class="subtitle">BFS &amp; DFS Graph Navigation — Problem 8</div>
+  </div>
+  <div class="badge">AI Assignment</div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="section">
+      <div class="section-title">Add Edge (bidirectional)</div>
+      <div class="row2">
+        <div class="field"><label>From</label><input id="fromNode" placeholder="A" maxlength="8"/></div>
+        <div class="field"><label>To</label><input id="toNode" placeholder="B" maxlength="8"/></div>
+      </div>
+      <button class="btn btn-add" onclick="addEdge()">+ Add Edge</button>
+      <div class="edge-tags" id="edgeTags"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Search</div>
+      <div class="row2">
+        <div class="field"><label>Start Node</label><input id="startNode" placeholder="A" maxlength="8"/></div>
+        <div class="field"><label>Goal Node</label><input id="goalNode" placeholder="G" maxlength="8"/></div>
+      </div>
+      <button class="btn btn-run" onclick="runSearch()">▶ Run BFS &amp; DFS</button>
+      <button class="btn btn-secondary" onclick="loadExample()">↺ Load Example Graph</button>
+      <button class="btn btn-secondary" onclick="clearAll()">✕ Clear All</button>
+    </div>
+    <div class="section" style="flex:1">
+      <div class="section-title">Legend</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:#1d9e75"></div>Start node</div>
+        <div class="leg"><div class="leg-dot" style="background:#e8593c"></div>Goal node</div>
+        <div class="leg"><div class="leg-dot" style="background:#3b8bd4"></div>BFS path node</div>
+        <div class="leg"><div class="leg-dot" style="background:#9f62c8"></div>DFS path node</div>
+        <div class="leg"><div class="leg-line" style="background:#3a3f50"></div>Regular edge</div>
+        <div class="leg"><div class="leg-line" style="background:#3b8bd4"></div>BFS path</div>
+        <div class="leg"><div class="leg-line" style="background:#9f62c8"></div>DFS path</div>
+      </div>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="canvas-wrap">
+      <canvas id="gc"></canvas>
+      <div class="hint">Drag nodes to rearrange</div>
+    </div>
+    <div class="results" id="results">
+      <div class="results-grid">
+        <div class="result-card bfs">
+          <div class="rc-title">BFS — Breadth-First Search</div>
+          <div class="rc-path" id="bfsPath">—</div>
+          <div class="rc-stats" id="bfsStats"></div>
+          <div class="verdict"><span>OPTIMAL</span> Always finds shortest path</div>
+        </div>
+        <div class="result-card dfs">
+          <div class="rc-title">DFS — Depth-First Search</div>
+          <div class="rc-path" id="dfsPath">—</div>
+          <div class="rc-stats" id="dfsStats"></div>
+          <div class="verdict">May not find shortest path</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const edges=[],positions={},adj={};
+let bfsPathSet=new Set(),dfsPathSet=new Set(),bfsNodes=new Set(),dfsNodes=new Set();
+let startNode='',goalNode='',dragging=null,dragOX=0,dragOY=0;
+const canvas=document.getElementById('gc'),ctx=canvas.getContext('2d');
+
+function toast(msg,ms=2200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+
+function ensureNode(n){
+  if(!adj[n])adj[n]=new Set();
+  if(!positions[n]){
+    const keys=Object.keys(positions);
+    const angle=(keys.length/Math.max(1,keys.length+1))*Math.PI*2;
+    const W=canvas.clientWidth||700,H=canvas.clientHeight||420;
+    const r=Math.min(W,H)*0.34;
+    positions[n]={x:W/2+Math.cos(angle)*r,y:H/2+Math.sin(angle)*r};
+    applyForceLayout(60);
+  }
+}
+
+function applyForceLayout(iters=80){
+  const nodes=Object.keys(positions);
+  const W=canvas.clientWidth||700,H=canvas.clientHeight||420;
+  for(let i=0;i<iters;i++){
+    const f={};nodes.forEach(n=>f[n]={x:0,y:0});
+    for(let a=0;a<nodes.length;a++)for(let b=a+1;b<nodes.length;b++){
+      const na=nodes[a],nb=nodes[b];
+      const dx=positions[nb].x-positions[na].x,dy=positions[nb].y-positions[na].y;
+      const d=Math.max(Math.sqrt(dx*dx+dy*dy),1),rep=5000/(d*d);
+      f[na].x-=rep*dx/d;f[na].y-=rep*dy/d;f[nb].x+=rep*dx/d;f[nb].y+=rep*dy/d;
+    }
+    edges.forEach(([a,b])=>{
+      const dx=positions[b].x-positions[a].x,dy=positions[b].y-positions[a].y;
+      const d=Math.max(Math.sqrt(dx*dx+dy*dy),1),att=(d-100)*0.05;
+      f[a].x+=att*dx/d;f[a].y+=att*dy/d;f[b].x-=att*dx/d;f[b].y-=att*dy/d;
+    });
+    nodes.forEach(n=>{
+      positions[n].x=Math.max(30,Math.min(W-30,positions[n].x+f[n].x*0.12));
+      positions[n].y=Math.max(30,Math.min(H-30,positions[n].y+f[n].y*0.12));
+    });
+  }
+}
+
+function addEdge(){
+  const f=document.getElementById('fromNode').value.trim().toUpperCase();
+  const t=document.getElementById('toNode').value.trim().toUpperCase();
+  if(!f||!t){toast('Enter both nodes');return;}
+  if(f===t){toast('Nodes must be different');return;}
+  if(edges.find(e=>(e[0]===f&&e[1]===t)||(e[0]===t&&e[1]===f))){toast('Edge already exists');return;}
+  ensureNode(f);ensureNode(t);adj[f].add(t);adj[t].add(f);edges.push([f,t]);
+  document.getElementById('fromNode').value='';document.getElementById('toNode').value='';
+  updateEdgeTags();draw();
+}
+
+function removeEdge(idx){
+  const[a,b]=edges[idx];edges.splice(idx,1);
+  adj[a]=new Set([...adj[a]].filter(x=>x!==b));adj[b]=new Set([...adj[b]].filter(x=>x!==a));
+  if(!adj[a].size){delete adj[a];delete positions[a];}if(!adj[b].size){delete adj[b];delete positions[b];}
+  updateEdgeTags();draw();
+}
+
+function updateEdgeTags(){
+  document.getElementById('edgeTags').innerHTML=edges.map((e,i)=>`<span class="edge-tag" onclick="removeEdge(${i})">${e[0]}—${e[1]} ✕</span>`).join('');
+}
+
+function edgeKey(a,b){return[a,b].sort().join('|');}
+
+function draw(){
+  const dpr=window.devicePixelRatio||1,W=canvas.clientWidth,H=canvas.clientHeight;
+  canvas.width=W*dpr;canvas.height=H*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  edges.forEach(([a,b])=>{
+    const pa=positions[a],pb=positions[b];if(!pa||!pb)return;
+    const k=edgeKey(a,b);
+    const inB=[...bfsPathSet].some(e=>edgeKey(...e.split('|'))===k);
+    const inD=[...dfsPathSet].some(e=>edgeKey(...e.split('|'))===k);
+    ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);
+    if(inB&&inD){ctx.strokeStyle='#c87040';ctx.lineWidth=4;}
+    else if(inB){ctx.strokeStyle='#3b8bd4';ctx.lineWidth=3.5;}
+    else if(inD){ctx.strokeStyle='#9f62c8';ctx.lineWidth=3.5;}
+    else{ctx.strokeStyle='#3a3f50';ctx.lineWidth=1.5;}
+    ctx.stroke();
+  });
+  Object.keys(positions).forEach(n=>{
+    const p=positions[n],isStart=n===startNode,isGoal=n===goalNode;
+    const inB=bfsNodes.has(n),inD=dfsNodes.has(n),R=22;
+    ctx.beginPath();ctx.arc(p.x,p.y,R,0,Math.PI*2);
+    if(isStart)ctx.fillStyle='#1d9e75';
+    else if(isGoal)ctx.fillStyle='#e8593c';
+    else if(inB&&inD)ctx.fillStyle='#c87040';
+    else if(inB)ctx.fillStyle='#1a3a5c';
+    else if(inD)ctx.fillStyle='#3d2060';
+    else ctx.fillStyle='#21252f';
+    ctx.fill();
+    ctx.strokeStyle=isStart?'#1d9e75':isGoal?'#e8593c':inB?'#3b8bd4':inD?'#9f62c8':'#4a5060';
+    ctx.lineWidth=inB||inD||isStart||isGoal?2.5:1;ctx.stroke();
+    ctx.fillStyle='#e8eaf0';ctx.font='bold 13px Segoe UI,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n,p.x,p.y);
+    if(isStart||isGoal){
+      ctx.font='bold 9px Segoe UI,sans-serif';ctx.fillStyle=isStart?'#1d9e75':'#e8593c';
+      ctx.fillText(isStart?'START':'GOAL',p.x,p.y+R+10);
+    }
+  });
+}
+
+function bfs(s,g){
+  if(!adj[s]||!adj[g])return{path:null,explored:[],nodes_count:0};
+  const visited=new Set([s]),queue=[[s,[s]]],explored=[];
+  while(queue.length){
+    const[cur,path]=queue.shift();explored.push(cur);
+    if(cur===g)return{path,explored,nodes_count:explored.length};
+    [...adj[cur]].sort().forEach(nb=>{if(!visited.has(nb)){visited.add(nb);queue.push([nb,[...path,nb]]);}});
+  }
+  return{path:null,explored,nodes_count:explored.length};
+}
+
+function dfs(s,g){
+  if(!adj[s]||!adj[g])return{path:null,explored:[],nodes_count:0};
+  const explored=[];
+  function rec(n,path,vis){
+    vis.add(n);explored.push(n);if(n===g)return path;
+    for(const nb of[...adj[n]].sort()){if(!vis.has(nb)){const r=rec(nb,[...path,nb],vis);if(r)return r;}}
+    return null;
+  }
+  const path=rec(s,[s],new Set());
+  return{path,explored,nodes_count:explored.length};
+}
+
+function runSearch(){
+  const s=document.getElementById('startNode').value.trim().toUpperCase();
+  const g=document.getElementById('goalNode').value.trim().toUpperCase();
+  if(!s||!g){toast('Set start and goal nodes');return;}
+  if(!positions[s]){toast(`Node "${s}" not in graph`);return;}
+  if(!positions[g]){toast(`Node "${g}" not in graph`);return;}
+  startNode=s;goalNode=g;
+  const b=bfs(s,g),d=dfs(s,g);
+  bfsPathSet=new Set();dfsPathSet=new Set();bfsNodes=new Set();dfsNodes=new Set();
+  if(b.path){b.path.forEach((n,i,a)=>{bfsNodes.add(n);if(i<a.length-1)bfsPathSet.add(n+'|'+a[i+1]);});}
+  if(d.path){d.path.forEach((n,i,a)=>{dfsNodes.add(n);if(i<a.length-1)dfsPathSet.add(n+'|'+a[i+1]);});}
+  document.getElementById('results').classList.add('show');
+  const stat=(cls,label,val)=>`<div class="stat"><span class="stat-label">${label}: </span><span class="stat-val ${cls}">${val}</span></div>`;
+  if(b.path){
+    document.getElementById('bfsPath').innerHTML=`<span style="color:#7a7f94">Path: </span>${b.path.join(' → ')}`;
+    document.getElementById('bfsStats').innerHTML=stat('bfs','Path length',b.path.length-1)+stat('bfs','Nodes explored',b.nodes_count)+stat('bfs','Optimal','Yes ✓');
+  }else{document.getElementById('bfsPath').innerHTML='<span class="no-path">No path found</span>';document.getElementById('bfsStats').innerHTML='';}
+  if(d.path){
+    document.getElementById('dfsPath').innerHTML=`<span style="color:#7a7f94">Path: </span>${d.path.join(' → ')}`;
+    const opt=b.path&&b.path.length===d.path.length?'Yes ✓':'Not guaranteed';
+    document.getElementById('dfsStats').innerHTML=stat('dfs','Path length',d.path.length-1)+stat('dfs','Nodes explored',d.nodes_count)+stat('dfs','Optimal',opt);
+  }else{document.getElementById('dfsPath').innerHTML='<span class="no-path">No path found</span>';document.getElementById('dfsStats').innerHTML='';}
+  draw();
+}
+
+function loadExample(){
+  clearAll();
+  const ex=[['A','B'],['A','C'],['B','D'],['B','E'],['C','F'],['D','G'],['E','G'],['F','G']];
+  const W=canvas.clientWidth||700,H=canvas.clientHeight||420;
+  const np={A:{x:W*.5,y:H*.12},B:{x:W*.28,y:H*.35},C:{x:W*.72,y:H*.35},D:{x:W*.14,y:H*.62},E:{x:W*.42,y:H*.62},F:{x:W*.72,y:H*.62},G:{x:W*.5,y:H*.85}};
+  Object.entries(np).forEach(([n,p])=>{positions[n]=p;adj[n]=new Set();});
+  ex.forEach(([a,b])=>{adj[a].add(b);adj[b].add(a);edges.push([a,b]);});
+  document.getElementById('startNode').value='A';document.getElementById('goalNode').value='G';
+  updateEdgeTags();draw();
+}
+
+function clearAll(){
+  edges.length=0;Object.keys(adj).forEach(k=>delete adj[k]);Object.keys(positions).forEach(k=>delete positions[k]);
+  bfsPathSet=new Set();dfsPathSet=new Set();bfsNodes=new Set();dfsNodes=new Set();startNode='';goalNode='';
+  document.getElementById('results').classList.remove('show');updateEdgeTags();draw();
+}
+
+function nodeAt(mx,my){return Object.keys(positions).find(n=>{const p=positions[n];return Math.hypot(mx-p.x,my-p.y)<24;});}
+canvas.addEventListener('mousedown',e=>{const r=canvas.getBoundingClientRect(),n=nodeAt(e.clientX-r.left,e.clientY-r.top);if(n){dragging=n;dragOX=e.clientX-r.left-positions[n].x;dragOY=e.clientY-r.top-positions[n].y;}});
+canvas.addEventListener('mousemove',e=>{if(!dragging)return;const r=canvas.getBoundingClientRect();positions[dragging].x=e.clientX-r.left-dragOX;positions[dragging].y=e.clientY-r.top-dragOY;draw();});
+canvas.addEventListener('mouseup',()=>dragging=null);
+window.addEventListener('resize',()=>draw());
+window.addEventListener('load',()=>{loadExample();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){const id=document.activeElement.id;if(id==='fromNode'||id==='toNode')addEdge();else runSearch();}});
+</script>
+</body>
+</html>
