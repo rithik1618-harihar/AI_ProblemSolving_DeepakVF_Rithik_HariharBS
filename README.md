@@ -14,7 +14,7 @@
 | | |
 |---|---|
 | **Team Member 1** | DEEPAK VF — RA2411026050015 |
-| **Team Member 2** | RITHICK HARIHAR — RA2411026050015 |
+| **Team Member 2** | RITHIK HARIHAR — RA2411026050052 |
 | **Department** | AIML A |
 | **Institution** | SRM INTITUTE OF SCIENCE AND TECHNOLOGY|
 | **Submission Date** | April 25, 2026 |
